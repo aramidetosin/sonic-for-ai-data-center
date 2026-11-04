@@ -1,0 +1,302 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.255.12/32
+exit
+interface Ethernet0
+description uplink-spine1
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description uplink-spine2
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description uplink-spine3
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description uplink-spine4
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+ip anycast-mac-address 00:00:5e:00:01:01
+ip vrf Vrf-Dev
+ip vrf Vrf-Mgmt
+ip vrf Vrf-Ocp
+ip vrf Vrf-Prod
+evpn esi-multihoming
+es-activation-delay 3000
+exit
+interface Vlan1502
+description l3vni-dev
+ip vrf forwarding Vrf-Dev
+exit
+interface Vlan1503
+description l3vni-mgmt
+ip vrf forwarding Vrf-Mgmt
+exit
+interface Vlan1505
+description l3vni-ocp
+ip vrf forwarding Vrf-Ocp
+exit
+interface Vlan1501
+description l3vni-prod
+ip vrf forwarding Vrf-Prod
+exit
+interface Loopback 10
+description inband-mgmt
+ip vrf forwarding Vrf-Mgmt
+ip address 172.16.255.12/32
+exit
+interface Vlan100
+description ocp-nodes
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.1.1/24
+exit
+interface Vlan104
+description ocp-bastion
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.4.1/24
+exit
+interface Vlan111
+description prod-lb
+ip vrf forwarding Vrf-Prod
+mtu 9100
+ip address 10.10.1.5/24
+exit
+interface Vlan211
+description dev-lb
+ip vrf forwarding Vrf-Dev
+mtu 9100
+ip address 10.20.1.5/24
+exit
+interface Vlan301
+description mgmt-oob
+ip vrf forwarding Vrf-Mgmt
+mtu 9100
+ip anycast-address 172.16.0.1/24
+exit
+interface PortChannel11 fast_rate
+description ocp-master1-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:01:00:0b
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:01:0b
+exit
+exit
+interface Ethernet4
+description ocp-master1-lag-member
+mtu 9100
+channel-group 11
+no shutdown
+exit
+interface PortChannel12 fast_rate
+description ocp-master2-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:01:00:0c
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:01:0c
+exit
+exit
+interface Ethernet5
+description ocp-master2-lag-member
+mtu 9100
+channel-group 12
+no shutdown
+exit
+interface PortChannel14 fast_rate
+description bastion-ocp-lag
+mtu 9100
+switchport access Vlan 104
+system-mac 02:00:00:01:00:0e
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:01:0e
+exit
+exit
+interface Ethernet7
+description bastion-ocp-lag-member
+mtu 9100
+channel-group 14
+no shutdown
+exit
+interface Ethernet9
+description ocp-master2-bmc
+no shutdown
+switchport access Vlan 301
+exit
+interface vxlan vtep1
+source-ip 10.255.255.12
+qos-mode pipe dscp 0
+map vni 10100 vlan 100
+map vni 10104 vlan 104
+map vni 10111 vlan 111
+map vni 10211 vlan 211
+map vni 10301 vlan 301
+map vni 50002 vlan 1502
+map vni 50002 vrf Vrf-Dev
+map vni 50003 vlan 1503
+map vni 50003 vrf Vrf-Mgmt
+map vni 50005 vlan 1505
+map vni 50005 vrf Vrf-Ocp
+map vni 50001 vlan 1501
+map vni 50001 vrf Vrf-Prod
+exit
+router bgp 65001
+router-id 10.255.255.12
+log-neighbor-changes
+timers 3 9
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.255.12/32
+exit
+address-family l2vpn evpn
+advertise-all-vni
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+exit
+router bgp 65001 vrf Vrf-Dev
+router-id 10.255.255.12
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+neighbor 10.20.1.11
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.12
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+router bgp 65001 vrf Vrf-Mgmt
+router-id 10.255.255.12
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65001 vrf Vrf-Ocp
+router-id 10.255.255.12
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65001 vrf Vrf-Prod
+router-id 10.255.255.12
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+neighbor 10.10.1.11
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.12
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+end
+write memory

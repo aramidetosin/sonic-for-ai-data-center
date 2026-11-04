@@ -1,0 +1,7 @@
+192.168.100.141 vr-shared
+192.168.100.142 vr-prod
+192.168.100.143 vr-dev
+192.168.100.144 vr-prod-console
+192.168.100.145 vr-dev-console
+192.168.100.146 client-lan1
+192.168.100.147 client-lan2

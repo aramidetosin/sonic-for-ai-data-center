@@ -1,0 +1,24 @@
+# Day-1 MachineConfig (both clusters, workers): iscsid + multipathd for Trident ontap-san. multipath claims only NetApp LUNs.
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-worker-trident-iscsi
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.4.0
+    storage:
+      files:
+        - path: /etc/multipath.conf
+          mode: 0644
+          overwrite: true
+          contents:
+            source: data:,defaults%20%7B%0A%20%20user_friendly_names%20yes%0A%20%20find_multipaths%20no%0A%7D%0Ablacklist%20%7B%0A%20%20device%20%7B%0A%20%20%20%20vendor%20%22.*%22%0A%20%20%20%20product%20%22.*%22%0A%20%20%7D%0A%7D%0Ablacklist_exceptions%20%7B%0A%20%20device%20%7B%0A%20%20%20%20vendor%20%22NETAPP%22%0A%20%20%20%20product%20%22LUN%22%0A%20%20%7D%0A%7D%0A
+    systemd:
+      units:
+        - name: iscsid.service
+          enabled: true
+        - name: multipathd.service
+          enabled: true

@@ -1,0 +1,245 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.255.3/32
+exit
+interface Ethernet0
+description downlink-leaf1a-control
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description downlink-leaf1b-control
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description downlink-leaf2a-control
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description downlink-leaf2b-control
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet4
+description downlink-leaf3a-compute
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet5
+description downlink-leaf3b-compute
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet6
+description downlink-leaf4a-compute
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet7
+description downlink-leaf4b-compute
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet8
+description downlink-leaf5a-storage
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet9
+description downlink-leaf5b-storage
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet10
+description downlink-leaf6a-border
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet11
+description downlink-leaf6b-border
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+router bgp 65000
+router-id 10.255.255.3
+log-neighbor-changes
+timers 3 9
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.255.3/32
+exit
+address-family l2vpn evpn
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet4
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet5
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet6
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet7
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet8
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet9
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet10
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+neighbor interface Ethernet11
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+address-family l2vpn evpn
+activate
+exit
+exit
+exit
+end
+write memory

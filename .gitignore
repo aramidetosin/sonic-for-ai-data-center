@@ -1,0 +1,21 @@
+# runtime state and generated install folders
+clab-*/
+nodes/
+agent-*/
+results/
+logs/
+*.qcow2
+*.iso
+*.gguf
+images/*/dl/
+__pycache__/
+*.pyc
+# secrets: never committed
+*.env.local
+f5-regkeys*
+pull-secret.json
+*.pem
+*.key
+kubeconfig*
+kubeadmin-password
+.env

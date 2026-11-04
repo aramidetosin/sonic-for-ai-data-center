@@ -1,0 +1,457 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.255.17/32
+exit
+interface Ethernet0
+description uplink-spine1
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description uplink-spine2
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description uplink-spine3
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description uplink-spine4
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+ip anycast-mac-address 00:00:5e:00:01:01
+ip vrf Vrf-Dev
+ip vrf Vrf-Mgmt
+ip vrf Vrf-Ocp
+ip vrf Vrf-Prod
+evpn esi-multihoming
+es-activation-delay 3000
+exit
+interface Vlan1502
+description l3vni-dev
+ip vrf forwarding Vrf-Dev
+exit
+interface Vlan1503
+description l3vni-mgmt
+ip vrf forwarding Vrf-Mgmt
+exit
+interface Vlan1505
+description l3vni-ocp
+ip vrf forwarding Vrf-Ocp
+exit
+interface Vlan1501
+description l3vni-prod
+ip vrf forwarding Vrf-Prod
+exit
+interface Loopback 10
+description inband-mgmt
+ip vrf forwarding Vrf-Mgmt
+ip address 172.16.255.17/32
+exit
+interface Vlan100
+description ocp-nodes
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.1.1/24
+exit
+interface Vlan111
+description prod-lb
+ip vrf forwarding Vrf-Prod
+mtu 9100
+ip address 10.10.1.8/24
+exit
+interface Vlan211
+description dev-lb
+ip vrf forwarding Vrf-Dev
+mtu 9100
+ip address 10.20.1.8/24
+exit
+interface Vlan212
+description dev-probe
+ip vrf forwarding Vrf-Dev
+mtu 9100
+ip anycast-address 10.20.2.1/24
+exit
+interface Vlan301
+description mgmt-oob
+ip vrf forwarding Vrf-Mgmt
+mtu 9100
+ip anycast-address 172.16.0.1/24
+exit
+interface PortChannel41 fast_rate
+description ocp-dev-worker1-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:29
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:29
+exit
+exit
+interface Ethernet4
+description ocp-dev-worker1-lag-member
+mtu 9100
+channel-group 41
+no shutdown
+exit
+interface PortChannel42 fast_rate
+description ocp-dev-worker2-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:2a
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2a
+exit
+exit
+interface Ethernet5
+description ocp-dev-worker2-lag-member
+mtu 9100
+channel-group 42
+no shutdown
+exit
+interface PortChannel43 fast_rate
+description ocp-dev-worker3-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:2b
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2b
+exit
+exit
+interface Ethernet6
+description ocp-dev-worker3-lag-member
+mtu 9100
+channel-group 43
+no shutdown
+exit
+interface PortChannel45 fast_rate
+description ocp-gpu-worker5-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:2d
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2d
+exit
+exit
+interface Ethernet11
+description ocp-gpu-worker5-lag-member
+mtu 9100
+channel-group 45
+no shutdown
+exit
+interface PortChannel46 fast_rate
+description ocp-gpu-worker6-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:2e
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2e
+exit
+exit
+interface Ethernet12
+description ocp-gpu-worker6-lag-member
+mtu 9100
+channel-group 46
+no shutdown
+exit
+interface PortChannel47 fast_rate
+description ocp-gpu-worker7-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:2f
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2f
+exit
+exit
+interface Ethernet13
+description ocp-gpu-worker7-lag-member
+mtu 9100
+channel-group 47
+no shutdown
+exit
+interface PortChannel48 fast_rate
+description ocp-gpu-worker8-lag
+mtu 9100
+switchport access Vlan 100
+switchport trunk allowed Vlan 111,211
+system-mac 02:00:00:04:00:30
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:30
+exit
+exit
+interface Ethernet14
+description ocp-gpu-worker8-lag-member
+mtu 9100
+channel-group 48
+no shutdown
+exit
+interface PortChannel44 fast_rate
+description probe-dev-lag
+mtu 9100
+switchport access Vlan 212
+system-mac 02:00:00:04:00:2c
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:04:2c
+exit
+exit
+interface Ethernet7
+description probe-dev-lag-member
+mtu 9100
+channel-group 44
+no shutdown
+exit
+interface Ethernet8
+description ocp-dev-worker1-bmc
+no shutdown
+switchport access Vlan 301
+exit
+interface Ethernet9
+description ocp-dev-worker3-bmc
+no shutdown
+switchport access Vlan 301
+exit
+interface vxlan vtep1
+source-ip 10.255.255.17
+qos-mode pipe dscp 0
+map vni 10100 vlan 100
+map vni 10111 vlan 111
+map vni 10211 vlan 211
+map vni 10212 vlan 212
+map vni 10301 vlan 301
+map vni 50002 vlan 1502
+map vni 50002 vrf Vrf-Dev
+map vni 50003 vlan 1503
+map vni 50003 vrf Vrf-Mgmt
+map vni 50005 vlan 1505
+map vni 50005 vrf Vrf-Ocp
+map vni 50001 vlan 1501
+map vni 50001 vrf Vrf-Prod
+exit
+router bgp 65004
+router-id 10.255.255.17
+log-neighbor-changes
+timers 3 9
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.255.17/32
+exit
+address-family l2vpn evpn
+advertise-all-vni
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+exit
+router bgp 65004 vrf Vrf-Dev
+router-id 10.255.255.17
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+neighbor 10.20.1.31
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.32
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.33
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.45
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.46
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.47
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.20.1.48
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+router bgp 65004 vrf Vrf-Mgmt
+router-id 10.255.255.17
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65004 vrf Vrf-Ocp
+router-id 10.255.255.17
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65004 vrf Vrf-Prod
+router-id 10.255.255.17
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+neighbor 10.10.1.31
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.32
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.33
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.45
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.46
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.47
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor 10.10.1.48
+remote-as 65030
+timers 3 9
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+end
+write memory

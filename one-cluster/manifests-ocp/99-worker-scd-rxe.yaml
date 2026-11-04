@@ -1,0 +1,38 @@
+{
+ "apiVersion": "machineconfiguration.openshift.io/v1",
+ "kind": "MachineConfig",
+ "metadata": {
+  "name": "99-worker-scd-rxe",
+  "labels": {
+   "machineconfiguration.openshift.io/role": "worker"
+  }
+ },
+ "spec": {
+  "config": {
+   "ignition": {
+    "version": "3.2.0"
+   },
+   "storage": {
+    "files": [
+     {
+      "path": "/usr/local/bin/scd-rxe.sh",
+      "mode": 493,
+      "overwrite": true,
+      "contents": {
+       "source": "data:,%23%21/bin/bash%0A%23%20scd-rxe%3A%20a%20SoftRoCE%20device%20per%20rail%20NIC%20on%20a%20GPU%20worker%20%28rxe_rail%3Cr%3E%29%3B%20the%20prod%20/%20dev%20workers%20share%20the%20worker%20pool%20and%20exit%20here.%0A%23%20A%20rail%20NIC%20is%20found%20by%20its%20MAC%3A%20guest%20NIC%20k%20carries%2050%3A00%3A30%3A%3Cnode%3E%3A00%3A%3C0x10%2Bk%3E%2C%20rail%20r%20is%20NIC%204%2Br%2C%20so%20its%20MAC%20ends%20%3A15%20..%20%3A1c%20%28the%20kernel%0A%23%20names%20it%20enp0s%3C5%2Br%3E%3B%20never%20assume%20a%20name%29.%20A%20device%20is%20re-created%20when%20missing%20or%20when%20its%20GSI%20QP%20%28QP1%29%20is%20in%20ERR.%0Acase%20%22%24%28hostname%20-s%29%22%20in%20gpu-worker%2A%29%20%3B%3B%20%2A%29%20echo%20%22scd-rxe%3A%20%24%28hostname%20-s%29%20has%20no%20rails%22%3B%20exit%200%3B%3B%20esac%0Amodprobe%20rdma_rxe%0Afor%20r%20in%201%202%203%204%205%206%207%208%3B%20do%0A%20%20suffix%3D%24%28printf%20%27%2502x%27%20%24%28%280x10%20%2B%204%20%2B%20r%29%29%29%3B%20n%3Drxe_rail%24r%3B%20dev%3D%22%22%0A%20%20for%20i%20in%20%24%28seq%201%2030%29%3B%20do%20dev%3D%24%28ip%20-o%20link%20%7C%20awk%20-v%20s%3D%22%3A00%3A%24suffix%22%20%27%240%20~%20%28%22link/ether%2050%3A00%3A30%3A%5B0-9a-f%5D%2B%22%20s%20%22%20%22%29%20%7Bsub%28%22%3A%22%2C%20%22%22%2C%20%242%29%3B%20print%20%242%7D%27%20%7C%20head%20-1%29%3B%20%5B%20-n%20%22%24dev%22%20%5D%20%26%26%20break%3B%20sleep%202%3B%20done%0A%20%20%5B%20-n%20%22%24dev%22%20%5D%20%7C%7C%20%7B%20echo%20%22scd-rxe%3A%20no%20NIC%20for%20rail%20%24r%22%3B%20continue%3B%20%7D%0A%20%20if%20rdma%20resource%20show%20qp%20link%20%24n/1%202%3E/dev/null%20%7C%20grep%20-q%20%22lqpn%201%20.%2Astate%20ERR%22%3B%20then%20rdma%20link%20delete%20%24n%3B%20fi%0A%20%20rdma%20link%20show%20%24n/1%20%3E/dev/null%202%3E%261%20%7C%7C%20rdma%20link%20add%20%24n%20type%20rxe%20netdev%20%24dev%0Adone%0Ardma%20link%20show%0A"
+      }
+     }
+    ]
+   },
+   "systemd": {
+    "units": [
+     {
+      "name": "scd-rxe.service",
+      "enabled": true,
+      "contents": "[Unit]\nDescription=SoftRoCE device per GPU rail NIC (sonic-clos-dc)\nAfter=network-online.target NetworkManager-wait-online.service\nWants=network-online.target\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/usr/local/bin/scd-rxe.sh\n[Install]\nWantedBy=multi-user.target\n"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "spec": {
+  "nodeDisruptionPolicy": {
+   "files": [
+    {
+     "path": "/etc/chrony.conf",
+     "actions": [
+      {
+       "type": "Restart",
+       "restart": {
+        "serviceName": "chronyd.service"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

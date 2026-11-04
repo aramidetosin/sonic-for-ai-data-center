@@ -1,0 +1,537 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.255.22/32
+exit
+interface Ethernet0
+description uplink-spine1
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description uplink-spine2
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description uplink-spine3
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description uplink-spine4
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+ip anycast-mac-address 00:00:5e:00:01:01
+ip vrf Vrf-Dev
+ip vrf Vrf-Mgmt
+ip vrf Vrf-Ocp
+ip vrf Vrf-Prod
+evpn esi-multihoming
+es-activation-delay 3000
+exit
+interface Vlan1502
+description l3vni-dev
+ip vrf forwarding Vrf-Dev
+exit
+interface Vlan1503
+description l3vni-mgmt
+ip vrf forwarding Vrf-Mgmt
+exit
+interface Vlan1505
+description l3vni-ocp
+ip vrf forwarding Vrf-Ocp
+exit
+interface Vlan1501
+description l3vni-prod
+ip vrf forwarding Vrf-Prod
+exit
+interface Loopback 10
+description inband-mgmt
+ip vrf forwarding Vrf-Mgmt
+ip address 172.16.255.22/32
+exit
+interface Vlan103
+description ocp-storage
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.3.1/24
+exit
+interface Vlan106
+description storage-admin-prod
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.6.1/24
+exit
+interface Vlan107
+description storage-admin-dev
+ip vrf forwarding Vrf-Ocp
+mtu 9100
+ip anycast-address 10.0.7.1/24
+exit
+interface Vlan113
+description prod-storage
+ip vrf forwarding Vrf-Prod
+mtu 9100
+ip anycast-address 10.10.3.1/24
+exit
+interface Vlan213
+description dev-storage
+ip vrf forwarding Vrf-Dev
+mtu 9100
+ip anycast-address 10.20.3.1/24
+exit
+interface Vlan301
+description mgmt-oob
+ip vrf forwarding Vrf-Mgmt
+mtu 9100
+ip anycast-address 172.16.0.1/24
+exit
+interface PortChannel61 fast_rate
+description ocp-master1-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:3d
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:3d
+exit
+exit
+interface Ethernet10
+description ocp-master1-stor-lag-member
+mtu 9100
+channel-group 61
+no shutdown
+exit
+interface PortChannel62 fast_rate
+description ocp-master2-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:3e
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:3e
+exit
+exit
+interface Ethernet11
+description ocp-master2-stor-lag-member
+mtu 9100
+channel-group 62
+no shutdown
+exit
+interface PortChannel63 fast_rate
+description ocp-master3-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:3f
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:3f
+exit
+exit
+interface Ethernet12
+description ocp-master3-stor-lag-member
+mtu 9100
+channel-group 63
+no shutdown
+exit
+interface PortChannel64 fast_rate
+description ocp-prod-worker1-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 113
+system-mac 02:00:00:05:00:40
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:40
+exit
+exit
+interface Ethernet13
+description ocp-prod-worker1-stor-lag-member
+mtu 9100
+channel-group 64
+no shutdown
+exit
+interface PortChannel65 fast_rate
+description ocp-prod-worker2-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 113
+system-mac 02:00:00:05:00:41
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:41
+exit
+exit
+interface Ethernet14
+description ocp-prod-worker2-stor-lag-member
+mtu 9100
+channel-group 65
+no shutdown
+exit
+interface PortChannel66 fast_rate
+description ocp-prod-worker3-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 113
+system-mac 02:00:00:05:00:42
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:42
+exit
+exit
+interface Ethernet15
+description ocp-prod-worker3-stor-lag-member
+mtu 9100
+channel-group 66
+no shutdown
+exit
+interface PortChannel67 fast_rate
+description ocp-dev-worker1-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 213
+system-mac 02:00:00:05:00:43
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:43
+exit
+exit
+interface Ethernet16
+description ocp-dev-worker1-stor-lag-member
+mtu 9100
+channel-group 67
+no shutdown
+exit
+interface PortChannel68 fast_rate
+description ocp-dev-worker2-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 213
+system-mac 02:00:00:05:00:44
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:44
+exit
+exit
+interface Ethernet17
+description ocp-dev-worker2-stor-lag-member
+mtu 9100
+channel-group 68
+no shutdown
+exit
+interface PortChannel69 fast_rate
+description ocp-dev-worker3-stor-lag
+mtu 9100
+switchport access Vlan 103
+switchport trunk allowed Vlan 213
+system-mac 02:00:00:05:00:45
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:45
+exit
+exit
+interface Ethernet18
+description ocp-dev-worker3-stor-lag-member
+mtu 9100
+channel-group 69
+no shutdown
+exit
+interface PortChannel70 fast_rate
+description ocp-gpu-worker1-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:46
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:46
+exit
+exit
+interface Ethernet19
+description ocp-gpu-worker1-stor-lag-member
+mtu 9100
+channel-group 70
+no shutdown
+exit
+interface PortChannel71 fast_rate
+description ocp-gpu-worker2-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:47
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:47
+exit
+exit
+interface Ethernet20
+description ocp-gpu-worker2-stor-lag-member
+mtu 9100
+channel-group 71
+no shutdown
+exit
+interface PortChannel72 fast_rate
+description ocp-gpu-worker3-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:48
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:48
+exit
+exit
+interface Ethernet21
+description ocp-gpu-worker3-stor-lag-member
+mtu 9100
+channel-group 72
+no shutdown
+exit
+interface PortChannel73 fast_rate
+description ocp-gpu-worker4-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:49
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:49
+exit
+exit
+interface Ethernet22
+description ocp-gpu-worker4-stor-lag-member
+mtu 9100
+channel-group 73
+no shutdown
+exit
+interface PortChannel74 fast_rate
+description ocp-gpu-worker5-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:4a
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:4a
+exit
+exit
+interface Ethernet23
+description ocp-gpu-worker5-stor-lag-member
+mtu 9100
+channel-group 74
+no shutdown
+exit
+interface PortChannel75 fast_rate
+description ocp-gpu-worker6-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:4b
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:4b
+exit
+exit
+interface Ethernet24
+description ocp-gpu-worker6-stor-lag-member
+mtu 9100
+channel-group 75
+no shutdown
+exit
+interface PortChannel76 fast_rate
+description ocp-gpu-worker7-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:4c
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:4c
+exit
+exit
+interface Ethernet25
+description ocp-gpu-worker7-stor-lag-member
+mtu 9100
+channel-group 76
+no shutdown
+exit
+interface PortChannel77 fast_rate
+description ocp-gpu-worker8-stor-lag
+mtu 9100
+switchport access Vlan 103
+system-mac 02:00:00:05:00:4d
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:4d
+exit
+exit
+interface Ethernet26
+description ocp-gpu-worker8-stor-lag-member
+mtu 9100
+channel-group 77
+no shutdown
+exit
+interface PortChannel51 fast_rate
+description netapp-01-lag
+mtu 9100
+switchport trunk allowed Vlan 103,106,107,113,213
+system-mac 02:00:00:05:00:33
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:33
+exit
+exit
+interface Ethernet4
+description netapp-01-lag-member
+mtu 9100
+channel-group 51
+no shutdown
+exit
+interface Ethernet5
+description netapp-01-lag-member
+mtu 9100
+channel-group 51
+no shutdown
+exit
+interface PortChannel52 fast_rate
+description netapp-02-lag
+mtu 9100
+switchport trunk allowed Vlan 103,106,107,113,213
+system-mac 02:00:00:05:00:34
+no shutdown
+evpn ethernet-segment 00:00:00:00:00:00:00:00:05:34
+exit
+exit
+interface Ethernet6
+description netapp-02-lag-member
+mtu 9100
+channel-group 52
+no shutdown
+exit
+interface Ethernet7
+description netapp-02-lag-member
+mtu 9100
+channel-group 52
+no shutdown
+exit
+interface Ethernet9
+description netapp-02-e0h-mgmt
+no shutdown
+switchport access Vlan 301
+exit
+interface vxlan vtep1
+source-ip 10.255.255.22
+qos-mode pipe dscp 0
+map vni 10103 vlan 103
+map vni 10106 vlan 106
+map vni 10107 vlan 107
+map vni 10113 vlan 113
+map vni 10213 vlan 213
+map vni 10301 vlan 301
+map vni 50002 vlan 1502
+map vni 50002 vrf Vrf-Dev
+map vni 50003 vlan 1503
+map vni 50003 vrf Vrf-Mgmt
+map vni 50005 vlan 1505
+map vni 50005 vrf Vrf-Ocp
+map vni 50001 vlan 1501
+map vni 50001 vrf Vrf-Prod
+exit
+router bgp 65005
+router-id 10.255.255.22
+log-neighbor-changes
+timers 3 9
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.255.22/32
+exit
+address-family l2vpn evpn
+advertise-all-vni
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+allowas-in 1
+exit
+address-family l2vpn evpn
+activate
+allowas-in 1
+exit
+exit
+exit
+router bgp 65005 vrf Vrf-Dev
+router-id 10.255.255.22
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65005 vrf Vrf-Mgmt
+router-id 10.255.255.22
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65005 vrf Vrf-Ocp
+router-id 10.255.255.22
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+router bgp 65005 vrf Vrf-Prod
+router-id 10.255.255.22
+log-neighbor-changes
+address-family ipv4 unicast
+redistribute connected
+maximum-paths 8
+exit
+address-family l2vpn evpn
+advertise ipv4 unicast
+exit
+exit
+end
+write memory

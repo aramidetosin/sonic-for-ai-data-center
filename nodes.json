@@ -1,0 +1,612 @@
+{
+ "mgmt": "172.21.30",
+ "nodes": {
+  "client-lan1": {
+   "image": "scd/host:1",
+   "mgmt": 137,
+   "group": "lan-clients",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "192.168.100.146/24",
+    "GW": "192.168.100.1"
+   },
+   "exec": [
+    "bash /shared/lan-client-up.sh"
+   ]
+  },
+  "client-lan2": {
+   "image": "scd/host:1",
+   "mgmt": 138,
+   "group": "lan-clients",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "192.168.100.147/24",
+    "GW": "192.168.100.1"
+   },
+   "exec": [
+    "bash /shared/lan-client-up.sh"
+   ]
+  },
+  "dns-ntp1": {
+   "image": "scd/host:1",
+   "mgmt": 135,
+   "group": "services",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "10.250.0.11/24",
+    "GW": "10.250.0.1",
+    "BOND": "1",
+    "ROLE": "primary"
+   },
+   "exec": [
+    "bash /shared/host-up.sh",
+    "bash /shared/svc-up.sh"
+   ]
+  },
+  "dns-ntp2": {
+   "image": "scd/host:1",
+   "mgmt": 136,
+   "group": "services",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "10.250.0.12/24",
+    "GW": "10.250.0.1",
+    "BOND": "1",
+    "ROLE": "secondary"
+   },
+   "exec": [
+    "bash /shared/host-up.sh",
+    "bash /shared/svc-up.sh"
+   ]
+  },
+  "probe-prod": {
+   "image": "scd/host:1",
+   "mgmt": 133,
+   "group": "probes",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "10.0.2.10/24",
+    "GW": "10.0.2.1",
+    "BOND": "1",
+    "BRIDGE": "eth3"
+   },
+   "exec": [
+    "bash /shared/host-up.sh"
+   ]
+  },
+  "probe-dev": {
+   "image": "scd/host:1",
+   "mgmt": 134,
+   "group": "probes",
+   "binds": [
+    "shared:/shared:ro",
+    "/root/scd-secrets/host.env:/run/scd/host.env:ro"
+   ],
+   "env": {
+    "IP": "10.0.2.10/24",
+    "GW": "10.0.2.1",
+    "BOND": "1",
+    "BRIDGE": "eth3"
+   },
+   "exec": [
+    "bash /shared/host-up.sh"
+   ]
+  },
+  "bastion-prod": {
+   "image": "scd/tenant-bastion:2",
+   "mgmt": 139,
+   "group": "bastions",
+   "binds": [
+    "/root/scd-secrets/bastion/prod-ops.pub:/etc/scd/authorized_keys:ro",
+    "agent-prod:/w/agent",
+    "/root/ocp-bin/openshift-install:/usr/local/bin/openshift-install:ro"
+   ],
+   "env": {
+    "TENANT": "prod",
+    "IP": "10.0.2.11/24",
+    "GW": "10.0.2.1",
+    "HARBOR_IP": "10.0.1.203",
+    "DNS": "10.250.0.11 10.250.0.12",
+    "SEARCH": "prod.dc.lab dc.lab",
+    "KUBECONFIG": "/w/agent/build/auth/kubeconfig"
+   },
+   "exec": []
+  },
+  "bastion-dev": {
+   "image": "scd/tenant-bastion:2",
+   "mgmt": 140,
+   "group": "bastions",
+   "binds": [
+    "/root/scd-secrets/bastion/dev-ops.pub:/etc/scd/authorized_keys:ro",
+    "agent-dev:/w/agent",
+    "/root/ocp-bin/openshift-install:/usr/local/bin/openshift-install:ro"
+   ],
+   "env": {
+    "TENANT": "dev",
+    "IP": "10.0.2.11/24",
+    "GW": "10.0.2.1",
+    "HARBOR_IP": "10.0.1.203",
+    "DNS": "10.250.0.11 10.250.0.12",
+    "SEARCH": "dev.dc.lab dc.lab",
+    "KUBECONFIG": "/w/agent/build/auth/kubeconfig"
+   },
+   "exec": []
+  },
+  "bastion-gpu": {
+   "image": "scd/bastion:1",
+   "mgmt": 131,
+   "group": "bastions",
+   "binds": [
+    "agent-gpu:/w/agent",
+    "/root/ocp-bin/openshift-install:/usr/local/bin/openshift-install:ro"
+   ],
+   "env": {
+    "TENANT_IP": "10.0.8.10",
+    "TENANT_GW": "10.0.8.1",
+    "C_IP": "172.16.0.10",
+    "DNS": "10.250.0.11 10.250.0.12",
+    "SEARCH": "gpu.dc.lab dc.lab",
+    "KUBECONFIG": "/w/agent/build/auth/kubeconfig"
+   },
+   "exec": []
+  },
+  "gpu-master1": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 111,
+   "group": "gpu-master",
+   "cluster": "gpu",
+   "hostname": "master1",
+   "binds": [
+    "nodes/gpu-master1/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "master1",
+    "NODE_IP": "10.0.8.11",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:6f:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.101",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-master2": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 112,
+   "group": "gpu-master",
+   "cluster": "gpu",
+   "hostname": "master2",
+   "binds": [
+    "nodes/gpu-master2/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "master2",
+    "NODE_IP": "10.0.8.12",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:70:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.102",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-master3": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 113,
+   "group": "gpu-master",
+   "cluster": "gpu",
+   "hostname": "master3",
+   "binds": [
+    "nodes/gpu-master3/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "master3",
+    "NODE_IP": "10.0.8.13",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:71:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.103",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "prod-cp1": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 114,
+   "group": "prod-master",
+   "cluster": "prod",
+   "hostname": "prod-cp1",
+   "binds": [
+    "nodes/prod-cp1/vm:/vm",
+    "agent-prod/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "prod-cp1",
+    "NODE_IP": "10.0.1.21",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:72:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.104",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-prod"
+   },
+   "exec": []
+  },
+  "prod-cp2": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 115,
+   "group": "prod-master",
+   "cluster": "prod",
+   "hostname": "prod-cp2",
+   "binds": [
+    "nodes/prod-cp2/vm:/vm",
+    "agent-prod/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "prod-cp2",
+    "NODE_IP": "10.0.1.22",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:73:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.105",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-prod"
+   },
+   "exec": []
+  },
+  "prod-cp3": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 116,
+   "group": "prod-master",
+   "cluster": "prod",
+   "hostname": "prod-cp3",
+   "binds": [
+    "nodes/prod-cp3/vm:/vm",
+    "agent-prod/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "prod-cp3",
+    "NODE_IP": "10.0.1.23",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:74:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.106",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-prod"
+   },
+   "exec": []
+  },
+  "dev-cp1": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 117,
+   "group": "dev-master",
+   "cluster": "dev",
+   "hostname": "dev-cp1",
+   "binds": [
+    "nodes/dev-cp1/vm:/vm",
+    "agent-dev/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "dev-cp1",
+    "NODE_IP": "10.0.1.21",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:75:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.107",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-dev"
+   },
+   "exec": []
+  },
+  "dev-cp2": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 118,
+   "group": "dev-master",
+   "cluster": "dev",
+   "hostname": "dev-cp2",
+   "binds": [
+    "nodes/dev-cp2/vm:/vm",
+    "agent-dev/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "dev-cp2",
+    "NODE_IP": "10.0.1.22",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:76:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.108",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-dev"
+   },
+   "exec": []
+  },
+  "dev-cp3": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 119,
+   "group": "dev-master",
+   "cluster": "dev",
+   "hostname": "dev-cp3",
+   "binds": [
+    "nodes/dev-cp3/vm:/vm",
+    "agent-dev/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "dev-cp3",
+    "NODE_IP": "10.0.1.23",
+    "FABRIC_NICS": "4",
+    "NODE_MAC": "50:00:30:77:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "172.16.0.109",
+    "OOB_PREFIX": "24",
+    "OOB_GW": "172.16.0.1",
+    "VM_MEM": "16384",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-dev"
+   },
+   "exec": []
+  },
+  "gpu-worker1": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 120,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker1",
+   "binds": [
+    "nodes/gpu-worker1/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker1",
+    "NODE_IP": "10.0.8.21",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:78:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker2": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 121,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker2",
+   "binds": [
+    "nodes/gpu-worker2/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker2",
+    "NODE_IP": "10.0.8.22",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:79:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker3": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 122,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker3",
+   "binds": [
+    "nodes/gpu-worker3/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker3",
+    "NODE_IP": "10.0.8.23",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7a:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker4": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 123,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker4",
+   "binds": [
+    "nodes/gpu-worker4/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker4",
+    "NODE_IP": "10.0.8.24",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7b:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker5": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 124,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker5",
+   "binds": [
+    "nodes/gpu-worker5/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker5",
+    "NODE_IP": "10.0.8.25",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7c:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker6": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 125,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker6",
+   "binds": [
+    "nodes/gpu-worker6/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker6",
+    "NODE_IP": "10.0.8.26",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7d:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker7": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 126,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker7",
+   "binds": [
+    "nodes/gpu-worker7/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker7",
+    "NODE_IP": "10.0.8.27",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7e:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  },
+  "gpu-worker8": {
+   "image": "scd/rhcos-node:1",
+   "mgmt": 127,
+   "group": "gpu-worker",
+   "cluster": "gpu",
+   "hostname": "gpu-worker8",
+   "binds": [
+    "nodes/gpu-worker8/vm:/vm",
+    "agent-gpu/iso:/iso:ro",
+    "shared:/shared:ro"
+   ],
+   "env": {
+    "NODE_HOSTNAME": "gpu-worker8",
+    "NODE_IP": "10.0.8.28",
+    "FABRIC_NICS": "12",
+    "NODE_MAC": "50:00:30:7f:00:00",
+    "NODE_MTU": "9000",
+    "BMC_IP": "",
+    "VM_MEM": "10240",
+    "VM_CPUS": "8",
+    "VM_DISK": "120G",
+    "HOLD_FILE": "/shared/release-gpu"
+   },
+   "exec": []
+  }
+ }
+}

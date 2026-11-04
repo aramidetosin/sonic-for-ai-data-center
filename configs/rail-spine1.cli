@@ -1,0 +1,144 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.254.1/32
+exit
+interface Ethernet0
+description downlink-rail-leaf1
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description downlink-rail-leaf2
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description downlink-rail-leaf3
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description downlink-rail-leaf4
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet4
+description downlink-rail-leaf5
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet5
+description downlink-rail-leaf6
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet6
+description downlink-rail-leaf7
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet7
+description downlink-rail-leaf8
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+router bgp 65100
+router-id 10.255.254.1
+log-neighbor-changes
+timers 3 9
+bestpath as-path multipath-relax
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.254.1/32
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet4
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet5
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet6
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet7
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+end
+write memory

@@ -1,0 +1,29 @@
+{
+ "apiVersion": "machineconfiguration.openshift.io/v1",
+ "kind": "MachineConfig",
+ "metadata": {
+  "name": "99-worker-scd-chrony",
+  "labels": {
+   "machineconfiguration.openshift.io/role": "worker"
+  }
+ },
+ "spec": {
+  "config": {
+   "ignition": {
+    "version": "3.4.0"
+   },
+   "storage": {
+    "files": [
+     {
+      "path": "/etc/chrony.conf",
+      "mode": 420,
+      "overwrite": true,
+      "contents": {
+       "source": "data:text/plain;charset=utf-8;base64,IyB0aGUgbm9kZXMgdGFrZSB0aW1lIG9ubHkgZnJvbSB0aGUgbGFiJ3MgdHdvIE5UUCBzZXJ2ZXJzIGluIFZyZi1TdmMgKGRucy1udHAxLCBkbnMtbnRwMik7IHRoZSBSSENPUyBkZWZhdWx0IHB1YmxpYyBwb29sIGlzIHJlbW92ZWQKc2VydmVyIDEwLjI1MC4wLjExIGlidXJzdApzZXJ2ZXIgMTAuMjUwLjAuMTIgaWJ1cnN0CmRyaWZ0ZmlsZSAvdmFyL2xpYi9jaHJvbnkvZHJpZnQKbWFrZXN0ZXAgMS4wIDMKcnRjc3luYwpsb2dkaXIgL3Zhci9sb2cvY2hyb255Cg=="
+      }
+     }
+    ]
+   }
+  }
+ }
+}

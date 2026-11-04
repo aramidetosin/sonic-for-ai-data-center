@@ -1,0 +1,134 @@
+configure terminal
+interface Loopback 0
+ip address 10.255.254.16/32
+exit
+interface Ethernet0
+description uplink-rail-spine1
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet1
+description uplink-rail-spine2
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet2
+description uplink-rail-spine3
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Ethernet3
+description uplink-rail-spine4
+no shutdown
+mtu 9100
+ipv6 enable
+no ipv6 nd suppress-ra
+ipv6 nd ra-interval 5
+exit
+interface Vlan60
+description rail-6
+mtu 9100
+ip address 172.16.6.1/24
+exit
+interface Ethernet4
+description gpu-worker1-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet5
+description gpu-worker2-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet6
+description gpu-worker3-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet7
+description gpu-worker4-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet8
+description gpu-worker5-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet9
+description gpu-worker6-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet10
+description gpu-worker7-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+interface Ethernet11
+description gpu-worker8-nic6
+mtu 9100
+switchport access Vlan 60
+no shutdown
+exit
+router bgp 65106
+router-id 10.255.254.16
+log-neighbor-changes
+timers 3 9
+bestpath as-path multipath-relax
+address-family ipv4 unicast
+maximum-paths 8
+network 10.255.254.16/32
+network 172.16.6.0/24
+exit
+neighbor interface Ethernet0
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet1
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet2
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+neighbor interface Ethernet3
+v6only
+remote-as external
+capability extended-nexthop
+address-family ipv4 unicast
+activate
+exit
+exit
+exit
+end
+write memory
